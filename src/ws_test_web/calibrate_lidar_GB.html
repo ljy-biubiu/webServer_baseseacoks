@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>网页点云显示测试</title>
+	<meta charset="utf-8">
+	<!-- <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"> -->
+	<meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+	<meta HTTP-EQUIV="Expires" CONTENT="0">
+
+	<script src='lib/jquery.min.js'></script>
+	<script src='app.js'></script>
+
+	<script type="text/javascript"
+		src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+	<script src="./pointcloud.js"></script>
+	<script src="./three.js/build/three.js"></script>
+	<style>
+		body {
+			background-color: #fff;
+			color: #444;
+		}
+
+		canvas {
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: -1;
+			display: block;
+		}
+	</style>
+
+	<!-- <script type="text/javascript"
+		src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+	<script src="./pointcloud.js"></script>
+	<script src="./three.js/build/three.js"></script> -->
+
+	<script type="module">
+
+		import * as THREE from './three.js/build/three.module.js';
+
+		import Stats from './three.js/examples/jsm/libs/stats.module.js';
+		import { PCDLoader } from './three.js/examples/jsm/loaders/PCDLoader.js';
+		import { TrackballControls } from './three.js/examples/jsm/controls/TrackballControls.js';
+		import { FirstPersonControls } from './three.js/examples/jsm/controls/FirstPersonControls.js';
+
+
+		import {
+			BufferGeometry,
+			Float32BufferAttribute,
+			Points,
+			PointsMaterial
+		} from './three.js/build/three.module.js';
+
+
+
+		/////////////////////////////////////////////////////////////////////////////////////////////rslidar_mid_scan
+		const geometry_mid_scan = new BufferGeometry();
+		//input_pointTcanvas_mid_scan(window.JSON.parse(value));
+		/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+		var timer = setInterval(function () {
+
+			if (flag_test == 1) {
+				flag_test = 0;
+				input_pointTcanvas_mid_scan(jsonObj);
+			}
+
+		}, 50)
+
+
+
+		// Subscribing to a Topic
+
+		let windowHalfX = window.innerWidth / 2;
+		let windowHalfY = window.innerHeight / 2;
+
+
+
+
+		//放入点rs_mid_scan
+		function input_pointTcanvas_mid_scan(point_array) {
+			position_mid_scan.length = 0;
+			for (var i = 0; i < point_array.length; i++) {
+				if (point_array[i].x == null) {
+					continue;
+				}
+				position_mid_scan.push(point_array[i].x.toFixed(3));
+				position_mid_scan.push(point_array[i].y.toFixed(3));
+				position_mid_scan.push(point_array[i].z.toFixed(3));
+			}
+			//console.log("the mark is " + point_array[0].z.toFixed(3));
+
+			geometry_mid_scan.setAttribute('position', new Float32BufferAttribute(position_mid_scan, 3));
+			//geometry_rs.setAttribute( 'normal', new Float32BufferAttribute( normal_rs, 3 ) );
+			geometry_mid_scan.computeBoundingSphere();
+
+			const material_mid_scan = new PointsMaterial({ size: 0.2 });
+			material_mid_scan.color.setHex(0xFF0000);
+
+			// var mesh_rs = new THREE.Mesh( geometry_rs, material_rs );
+			//console.log(point_array);
+			mesh_mid_scan = new Points(geometry_mid_scan, material_mid_scan);
+			scene.add(mesh_mid_scan);
+		}
+
+
+
+		container = document.getElementById('container1');
+
+		camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 10000);
+
+
+		scene = new THREE.Scene();
+		scene.background = new THREE.Color(0x000000);
+
+		var geometry = new THREE.BoxGeometry(1.8, 0.8, 1.5);
+		var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+		material.transparent = true;//是否透明
+		material.opacity = 0.5;//透明度
+		var cube = new THREE.Mesh(geometry, material);
+		cube.position.x = 0;
+		cube.position.y = 0;
+		cube.position.z = 10;
+		//scene.add(cube);
+
+		renderer = new THREE.WebGLRenderer({ antialias: true });
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		container.appendChild(renderer.domElement);
+
+
+
+		//鼠标事件
+		var controls = new TrackballControls(camera, renderer.domElement);                                //轨迹球控件，最常用的控件，可以使用鼠标轻松的移动、平移，缩放场景。
+
+		controls.rotateSpeed = 10;                                                                        //鼠标控制速度
+		controls.zoomSpeed = 1;                                                                           //鼠标控制速度
+		controls.panSpeed = 1;                                                                            //鼠标控制速度
+
+		controls.staticMoving = true;                                                                     // 静止移动，为 true 则没有惯性
+
+		controls.minDistance = 3;
+		controls.maxDistance = 0.3 * 10000;
+
+
+
+		animate();
+
+		function animate() {
+
+			requestAnimationFrame(animate);
+			render();
+		}
+
+		function render() {
+
+			cube.position.x = pose_x;
+			cube.position.y = pose_y;
+			cube.position.z = pose_z;
+			cube.rotation.z = yaw;
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			controls.update();
+			//stats.update();
+			renderer.render(scene, camera);
+
+		}
+
+		camera.position.set(0, 100, 0);
+		camera.up.set(0, 0, 1);
+		camera.lookAt(0, 0, 0);
+		lock1 = 0;
+
+	</script>
+
+</head>
+
+<body>
+
+
+	<script>
+
+		// function leftiew_FUNC() {
+		// 	foreview = 0;
+		// 	verticleview = 0;
+		// 	leftview = 1;
+		// 	anotherview = 0;
+		// 	lock1 = 1;
+		// 	console.log("----------1------------");
+		// }
+		// function foreview_FUNC() {
+		// 	foreview = 1;
+		// 	verticleview = 0;
+		// 	leftview = 0;
+		// 	anotherview = 0;
+		// 	lock2 = 1;
+		// 	console.log("-----------2-----------");
+		// }
+		// function verticleview_FUNC() {
+		// 	foreview = 0;
+		// 	verticleview = 1;
+		// 	leftview = 0;
+		// 	anotherview = 0;
+		// 	lock3 = 1;
+		// 	console.log("-----------3-----------");
+		// }
+		// function messview_FUNC() {
+		// 	foreview = 0;
+		// 	verticleview = 0;
+		// 	leftview = 0;
+		// 	anotherview = 1;
+		// 	lock4 = 1;
+		// 	console.log("------------4----------");
+		// }
+
+
+		// var xmlhttp;
+		// function loadXMLDoc(url, cfunc) {
+		// 	if (window.XMLHttpRequest) {// IE7+, Firefox, Chrome, Opera, Safari 代码
+		// 		xmlhttp = new XMLHttpRequest();
+		// 	}
+		// 	else {// IE6, IE5 代码
+		// 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		// 	}
+		// 	xmlhttp.onreadystatechange = cfunc;
+		// 	xmlhttp.open("GET", url, true);
+		// 	xmlhttp.send();
+		// }
+
+
+		// window.onbeforeunload = onbeforeunload_handler;
+		// //window.onunload = onunload_handler;  
+		// function onbeforeunload_handler() {
+
+		// }
+	</script>
+
+	<!-- <div id="header" style="background-color:#FFA500;">
+		<h1 style="margin-bottom:0;">主要的网页标题</h1>
+	</div> -->
+
+	<div id="container1">
+
+		<!-- <input id="load" type="button" value="...">加载点云</input> -->
+
+		<!-- <button id="button_left" disabled="disabled" onclick="leftiew_FUNC()"
+			style="opacity:0.5;width:100px;height:35px;font-size:15px;position:absolute; right:20px; bottom:270px;">&nbsp;左视图&nbsp;</button>
+		<button id="button_front" disabled="disabled" onclick="foreview_FUNC()"
+			style="opacity:0.5;width:100px;height:35px;font-size:15px;position:absolute; right:20px; bottom:200px;">&nbsp;前视图&nbsp;</button>
+		<button id="button_verticle" disabled="disabled" onclick="verticleview_FUNC()"
+			style="opacity:0.5;width:100px;height:35px;font-size:15px;position:absolute; right:20px; bottom:130px;">&nbsp;俯视图&nbsp;</button>
+		<button id="button_undefined_view" disabled="disabled" onclick="messview_FUNC()"
+			style="opacity:0.5;width:100px;height:35px;font-size:15px;position:absolute; right:20px; bottom:60px;">&nbsp;--图&nbsp;</button> -->
+
+	</div>
+
+
+</body>
+
+</html>
