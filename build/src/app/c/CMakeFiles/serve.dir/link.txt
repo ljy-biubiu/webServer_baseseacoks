@@ -1,0 +1,1 @@
+/usr/bin/c++    -g    -rdynamic CMakeFiles/serve.dir/serve.cpp.o  -o serve  ../../main/c/libseasocks.a -lpthread /usr/local/lib/libz.so 

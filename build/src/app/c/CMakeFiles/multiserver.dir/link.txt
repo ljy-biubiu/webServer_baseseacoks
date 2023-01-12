@@ -1,0 +1,1 @@
+/usr/bin/c++    -g    -rdynamic CMakeFiles/multiserver.dir/multiserver.cpp.o  -o multiserver  ../../main/c/libseasocks.a -lpthread /usr/local/lib/libz.so 

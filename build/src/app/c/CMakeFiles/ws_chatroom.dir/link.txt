@@ -1,0 +1,1 @@
+/usr/bin/c++    -g    -rdynamic CMakeFiles/ws_chatroom.dir/ws_chatroom.cpp.o  -o ws_chatroom  ../../main/c/libseasocks.a -lpthread /usr/local/lib/libz.so 

@@ -1,0 +1,1 @@
+/usr/bin/c++    -g    -rdynamic CMakeFiles/ws_echo.dir/ws_echo.cpp.o  -o ws_echo  ../../main/c/libseasocks.a -lpthread /usr/local/lib/libz.so 

@@ -1,0 +1,1 @@
+/usr/bin/c++    -g    -rdynamic CMakeFiles/ph_test.dir/ph_test.cpp.o  -o ph_test  ../../main/c/libseasocks.a -lpthread /usr/local/lib/libz.so 
